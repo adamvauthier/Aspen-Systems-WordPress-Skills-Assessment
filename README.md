@@ -12,7 +12,7 @@
 <h3 dir="auto" tabindex="-1">Restrictions</h3>
 <ul dir="auto">
  	<li>
-<p dir="auto">Do not create a plugin from scratch. Please use the plugin found in <code>wp-content/plugins/jh-nyt-top-stories</code>. This plugin uses the <a href="https://github.com/DevinVinson/WordPress-Plugin-Boilerplate">WordPress Plugin Boilerplate</a>, an Object-Oriented boilerplate used for plugin development at Janus Henderson.</p>
+<p dir="auto">Do not create a plugin from scratch. Please use the plugin found in <code>wp-content/plugins/jh-nyt-top-stories</code>. This plugin uses the <a href="https://github.com/DevinVinson/WordPress-Plugin-Boilerplate">WordPress Plugin Boilerplate</a>, an Object-Oriented boilerplate used for plugin development at Aspen Systems Inc..</p>
 </li>
  	<li>
 <p dir="auto">All development should be done in the <code>jh-nyt-top-stories</code> plugin. Do not create other plugins, files, or edit any theme files.</p>

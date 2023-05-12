@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://www.janushenderson.com/
+ * @link       https://www.aspsys.com/
  * @since      1.0.0
  *
  * @package    Jh_Nyt_Top_Stories
@@ -25,7 +25,7 @@
  * @since      1.0.0
  * @package    Jh_Nyt_Top_Stories
  * @subpackage Jh_Nyt_Top_Stories/includes
- * @author     Janus Henderson <webtechteam@janushenderson.com>
+ * @author     Aspen Systems Inc. <webmaster@aspsys.com>
  */
 class Jh_Nyt_Top_Stories {
 

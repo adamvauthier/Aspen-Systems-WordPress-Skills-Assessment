@@ -8,17 +8,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://www.janushenderson.com/
+ * @link              https://www.aspsys.com/
  * @since             1.0.0
  * @package           Jh_Nyt_Top_Stories
  *
  * @wordpress-plugin
- * Plugin Name:       Janus Henderson NYT Top Stories
- * Plugin URI:        https://github.com/JanusHenderson/wp-skills-assessment
+ * Plugin Name:       Aspen Systems Inc. NYT Top Stories
+ * Plugin URI:        https://github.com/aspensystemsgit/Aspen-Systems-WordPress-Skills-Assessment
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.0
- * Author:            Janus Henderson
- * Author URI:        https://www.janushenderson.com/
+ * Author:            Aspen Systems Inc.
+ * Author URI:        https://www.aspsys.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       jh-nyt-top-stories
