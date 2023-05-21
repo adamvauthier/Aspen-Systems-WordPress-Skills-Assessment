@@ -1,5 +1,7 @@
 <?php
+if(!defined('DB_HOST')){
 require_once( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-load.php' );
+}
 if ( ! function_exists( 'post_exists' ) ) {
     require_once( $_SERVER[ 'DOCUMENT_ROOT' ] . '/wp-admin/includes/post.php' );
 }
@@ -55,7 +57,6 @@ class Jh_Nyt_Top_Stories_Data_Parser {
 					  'post_excerpt'  => $article['abstract'],
 					  'post_date'	  => $article['published_date'],
 					  'meta_input'	  => array( 'URL' => $article['url'], 'byline' => $article['byline'] ),
-					  'tax_input'	  => $custom_tax,
 					  'post_status'   => 'publish',
 					  'post_content'  => 'Article',
 				);
