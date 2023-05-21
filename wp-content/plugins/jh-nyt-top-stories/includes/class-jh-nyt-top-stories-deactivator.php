@@ -30,7 +30,7 @@ class Jh_Nyt_Top_Stories_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-
+		wp_clear_scheduled_hook( 'nytcontent_scheduler_parser' );
 	}
 
 }

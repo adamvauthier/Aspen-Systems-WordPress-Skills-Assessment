@@ -67,6 +67,7 @@ class Jh_Nyt_Top_Stories {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
+		
 		if ( defined( 'JH_NYT_TOP_STORIES_VERSION' ) ) {
 			$this->version = JH_NYT_TOP_STORIES_VERSION;
 		} else {
@@ -78,6 +79,8 @@ class Jh_Nyt_Top_Stories {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->register_top_stories_post();
+		$this->register_cron_hook();
 
 	}
 
@@ -121,7 +124,17 @@ class Jh_Nyt_Top_Stories {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jh-nyt-top-stories-public.php';
+		
+		/**
+		 * The class responsible for defining the shortcode to display stories.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jh-nyt-top-stories-shortcode.php';
+		
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jh-nyt-top-stories-get-feed.php';
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jh-nyt-top-stories-cli.php';
+
+		
 		$this->loader = new Jh_Nyt_Top_Stories_Loader();
 
 	}
@@ -156,6 +169,7 @@ class Jh_Nyt_Top_Stories {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'nyt_stories_admin_menu' );
 
 	}
 
@@ -172,8 +186,125 @@ class Jh_Nyt_Top_Stories {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		$this->loader->add_action( 'init', $plugin_public, 'build_shortcode');
+		$this->loader->add_action( 'cli_init', $plugin_public, 'wds_cli_register_commands');
+		
 	}
+  
+  	private function register_top_stories_post(){
+			  /**
+		 * Registers the NYT Top Stories hook.
+		 * @uses add_action()
+		 */
+		add_action( 'init' ,'wp_new_cpt');
+
+		/**
+		 * Creates a new NYT Top Stories Post Type()
+		 * @uses register_post_type()
+		 */
+
+		function wp_new_cpt() {
+
+			$labels = array(
+				'name'               => _x( 'NYT Top Stories', 'post type general name', 'nyt-top-stories' ),
+				'singular_name'      => _x( 'NYT Top Story', 'post type singular name', 'nyt-top-stories' ),
+				'menu_name'          => _x( 'NYT Top Stories', 'admin menu', 'nyt-top-stories' ),
+				'name_admin_bar'     => _x( 'NYT Top Story', 'add new on admin bar', 'nyt-top-stories' ),
+				'add_new'            => _x( 'Add New', 'NYT Top Story', 'nyt-top-stories' ),
+				'add_new_item'       => __( 'Add New NYT Top Story', 'nyt-top-stories' ),
+				'new_item'           => __( 'New NYT Top Story', 'nyt-top-stories' ),
+				'edit_item'          => __( 'Edit NYT Top Story', 'nyt-top-stories' ),
+				'view_item'          => __( 'View NYT Top Story', 'nyt-top-stories' ),
+				'all_items'          => __( 'All NYT Top Stories', 'nyt-top-stories' ),
+				'search_items'       => __( 'Search NYT Top Stories', 'nyt-top-stories' ),
+				'parent_item_colon'  => __( 'Parent NYT Top Stories:', 'nyt-top-stories' ),
+				'not_found'          => __( 'No NYT Top Stories found.', 'nyt-top-stories' ),
+				'not_found_in_trash' => __( 'No NYT Top Stories found in Trash.', 'nyt-top-stories' )
+			);
+
+			$args = array(
+				'labels'               => $labels,  
+				'description'          => __( 'Description.', 'Top Stories from the New York Times' ),
+				'public'               => true,    
+				'publicly_queryable'   => true,    
+				'show_ui'              => true,    
+				'show_in_menu'         => true,    
+				'show_in_admin_bar'    => true,    
+				'query_var'            => true,    
+				'rewrite'              => true,	   
+				'capability_type'      => 'post',  
+				'has_archive'          => true,    
+				'hierarchical'         => false,   
+				'menu_position'        => null,    
+				'exclude_from_search'  => true,   
+				'supports'             => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+				'can_export'           => true,    
+				'delete_with_user'     => null,    
+				'taxonomies'           => array( 'nyt_category', 'nyt_tag' ),
+			);
+
+			register_post_type( 'nyt_story', $args ); 
+
+		}
+		
+			 /**
+			 * Add custom taxonomies
+			 *
+			 * Additional custom taxonomies can be defined here
+			 * https://codex.wordpress.org/Function_Reference/register_taxonomy
+			 */
+			function add_custom_taxonomies() {
+			  // Add new "Categories" taxonomy to Posts
+			  register_taxonomy('nyt_category', 'nyt_story', array(
+				// Hierarchical taxonomy (like categories)
+				'hierarchical' => true,
+				// This array of options controls the labels displayed in the WordPress Admin UI
+				'labels' => array(
+				  'name' => _x( 'Categories', 'taxonomy general name' ),
+				  'singular_name' => _x( 'Category', 'taxonomy singular name' ),
+				  'search_items' =>  __( 'Search Categories' ),
+				  'all_items' => __( 'All Categories' ),
+				  'edit_item' => __( 'Edit Categories' ),
+				  'update_item' => __( 'Update Categories' ),
+				  'add_new_item' => __( 'Add New Categories' ),
+				  'new_item_name' => __( 'New Categories Name' ),
+				  'menu_name' => __( 'Categories' ),
+				),
+			  ));
+			
+		
+			 // Add new "Categories" taxonomy to Posts
+			  register_taxonomy('nyt_tag', 'nyt_story', array(
+				// Hierarchical taxonomy (like categories)
+				'hierarchical' => true,
+				// This array of options controls the labels displayed in the WordPress Admin UI
+				'labels' => array(
+				  'name' => _x( 'Tags', 'taxonomy general name' ),
+				  'singular_name' => _x( 'Tag', 'taxonomy singular name' ),
+				  'search_items' =>  __( 'Search Tags' ),
+				  'all_items' => __( 'All Tags' ),
+				  'edit_item' => __( 'Edit Tags' ),
+				  'update_item' => __( 'Update Tags' ),
+				  'add_new_item' => __( 'Add New Tags' ),
+				  'new_item_name' => __( 'New Tag Name' ),
+				  'menu_name' => __( 'Tags' ),
+				),
+			  ));
+			}
+		
+			add_action( 'init', 'add_custom_taxonomies', 0 );
+    }
+	
+	
+	private function register_cron_hook(){
+		add_action ('nytcontent_scheduler_parser', 'load_cron_feed');
+		function load_cron_feed(){
+			$storiesPull = new Jh_Nyt_Top_Stories_Data_Parser();
+    		$result = $storiesPull->get_nyt_feed();
+     		//echo "Pulled Successfully";
+		}
+	}
+	
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
@@ -214,5 +345,6 @@ class Jh_Nyt_Top_Stories {
 	public function get_version() {
 		return $this->version;
 	}
+	
 
 }

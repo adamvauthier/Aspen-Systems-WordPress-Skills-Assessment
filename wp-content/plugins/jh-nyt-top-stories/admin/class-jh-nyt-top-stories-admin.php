@@ -51,7 +51,7 @@ class Jh_Nyt_Top_Stories_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+		
 	}
 
 	/**
@@ -99,5 +99,36 @@ class Jh_Nyt_Top_Stories_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/jh-nyt-top-stories-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
-
+	
+	public function nyt_stories_admin_menu() {
+		add_submenu_page(
+			'edit.php?post_type=nyt_story',
+			__( 'NYT Stories Update', 'nyt-top-stories' ),
+			__( 'NYT Stories Update', 'nyt-top-stories' ),
+			'upload_files',
+			'nytupdatepage',
+			array($this,'my_admin_page_contents'),
+			5
+		);
+	}
+	
+	public function my_admin_page_contents() {
+			if(isset($_GET['updatestories'])){
+				$storiesPull = new Jh_Nyt_Top_Stories_Data_Parser();
+    			$result = $storiesPull->get_nyt_feed();
+     			echo "Pulled Successfully";
+			}
+		else {
+		?>
+			<h1>
+				<?php esc_html_e( 'NYT Stories Manual Update', 'nyt-top-stories' ); ?>
+			</h1>
+			<a class="button nyt-update-button" href="/wp-admin/edit.php?post_type=nyt_story&page=nytupdatepage&updatestories=true">
+				Import Current Stories
+			</a>
+			
+		<?php
+		}
+	}
+	
 }

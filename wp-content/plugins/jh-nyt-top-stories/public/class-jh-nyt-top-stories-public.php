@@ -99,5 +99,20 @@ class Jh_Nyt_Top_Stories_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/jh-nyt-top-stories-public.js', array( 'jquery' ), $this->version, false );
 
 	}
+	
+	public function build_shortcode(){
+		add_shortcode('nyt_stories_display', 'Jh_Nyt_Top_Stories_Shortcode::display_stories');
+	}
+	
+	 /**
+	 * Registers our command when cli get's initialized.
+	 *
+	 * @since  1.0.0
+	 * @author Scott Anderson
+	 */
+	public function wds_cli_register_commands() {
+		WP_CLI::add_command( 'nyt', 'NYT_CLI' );
+	}	
+	
 
 }

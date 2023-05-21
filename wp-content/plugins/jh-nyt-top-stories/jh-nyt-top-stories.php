@@ -38,6 +38,11 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'JH_NYT_TOP_STORIES_VERSION', '1.0.0' );
 
 /**
+* The class responsible for defining all actions that occur parsing the article data.
+*/
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-jh-nyt-top-stories-get-feed.php';
+
+/**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-jh-nyt-top-stories-activator.php
  */
